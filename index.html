@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voyage — Cadeau</title>
+  <style>
+    :root {
+      --ink: #2a1f45;
+      --paper: #fff9f0;
+      --rose: #ff4d8d;
+      --rose-deep: #e0206a;
+      --gold: #ffc93c;
+      --gold-soft: #fff1a8;
+      --sage: #3ecf8e;
+      --wrap: #7c3aed;
+      --wrap-dark: #4c1d95;
+      --cyan: #22d3ee;
+      --shadow: rgba(74, 30, 120, 0.22);
+      --font-ui: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-display: Georgia, "Times New Roman", Times, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--font-ui);
+      color: var(--ink);
+      overflow-x: hidden;
+      background-color: #3d2b6d;
+      background-image:
+        radial-gradient(circle at 15% 25%, rgba(255, 107, 200, 0.45) 0%, transparent 42%),
+        radial-gradient(circle at 88% 18%, rgba(56, 232, 255, 0.4) 0%, transparent 38%),
+        radial-gradient(circle at 72% 78%, rgba(255, 214, 102, 0.45) 0%, transparent 40%),
+        radial-gradient(circle at 25% 85%, rgba(124, 255, 178, 0.35) 0%, transparent 35%),
+        repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 8deg, rgba(255, 255, 255, 0.03) 8deg 9deg);
+      background-attachment: fixed;
+    }
+
+    .scene {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 2rem 1rem 4rem;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      position: relative;
+    }
+
+    .scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.55) 22%, transparent 23%);
+      background-size: 18px 18px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .scene.hidden {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      transform: scale(1.05);
+    }
+
+    .gift-wrap {
+      text-align: center;
+      max-width: 28rem;
+    }
+
+    .gift-wrap h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(1.85rem, 5vw, 2.55rem);
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.02em;
+      background: linear-gradient(105deg, #fff9db 0%, #ffb4ec 35%, #9dffec 70%, #fff9db 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.2)) drop-shadow(0 6px 20px rgba(255, 140, 220, 0.45));
+      animation: shimmer 5s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: 200% center;
+      }
+    }
+
+    .gift-wrap .subtitle {
+      color: rgba(255, 255, 255, 0.92);
+      font-weight: 500;
+      font-size: 1.05rem;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .gift-box {
+      position: relative;
+      width: min(220px, 55vw);
+      height: min(180px, 45vw);
+      margin: 0 auto 2rem;
+      cursor: pointer;
+      perspective: 800px;
+      filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+    }
+
+    .gift-box:not(.opening):hover {
+      animation: wiggle 0.5s ease-in-out;
+    }
+
+    @keyframes wiggle {
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+      20% {
+        transform: rotate(-4deg) scale(1.02);
+      }
+      40% {
+        transform: rotate(4deg) scale(1.02);
+      }
+      60% {
+        transform: rotate(-2deg);
+      }
+      80% {
+        transform: rotate(2deg);
+      }
+    }
+
+    .gift-box:not(.opening) {
+      animation: bob 3s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .gift-box:focus {
+      outline: 3px solid var(--gold);
+      outline-offset: 8px;
+    }
+
+    .box-base {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 100%;
+      height: 58%;
+      background: repeating-linear-gradient(
+        -28deg,
+        #ec4899 0px,
+        #ec4899 14px,
+        #fbbf24 14px,
+        #fbbf24 28px,
+        #34d399 28px,
+        #34d399 42px,
+        #60a5fa 42px,
+        #60a5fa 56px
+      );
+      border-radius: 10px 10px 14px 14px;
+      transform: translateX(-50%);
+      box-shadow: 0 18px 40px var(--shadow), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .box-lid {
+      position: absolute;
+      left: 50%;
+      bottom: 52%;
+      width: 108%;
+      height: 38%;
+      background: linear-gradient(180deg, #f472b6 0%, #c026d3 45%, #7c3aed 100%);
+      border-radius: 12px 12px 4px 4px;
+      transform: translateX(-50%) rotateX(0deg);
+      transform-origin: 50% 100%;
+      box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: transform 1s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .gift-box.opening .box-lid {
+      transform: translateX(-50%) rotateX(-118deg);
+    }
+
+    .ribbon-v {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 14%;
+      height: 100%;
+      background: linear-gradient(90deg, #fef08a 0%, #fde047 35%, #facc15 50%, #fde047 65%, #fef08a 100%);
+      transform: translateX(-50%);
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+      z-index: 2;
+    }
+
+    .ribbon-h {
+      position: absolute;
+      left: 0;
+      bottom: 58%;
+      width: 100%;
+      height: 12%;
+      background: linear-gradient(180deg, #fef9c3 0%, #facc15 50%, #eab308 100%);
+      border-radius: 4px;
+      z-index: 3;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .bow {
+      position: absolute;
+      left: 50%;
+      bottom: 88%;
+      width: 58px;
+      height: 58px;
+      transform: translateX(-50%);
+      z-index: 4;
+      background: conic-gradient(from 45deg, #f472b6, #fcd34d, #4ade80, #38bdf8, #a78bfa, #f472b6);
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35), inset 0 0 0 3px rgba(255, 255, 255, 0.5);
+      transition: transform 0.6s ease, opacity 0.5s ease;
+    }
+
+    .bow::after {
+      content: "✨";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 1.45rem;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+    }
+
+    .gift-box.opening .bow {
+      transform: translateX(-50%) translateY(-80px) scale(0.6);
+      opacity: 0;
+    }
+
+    .sparkles {
+      position: absolute;
+      inset: -40%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .gift-box.opening .sparkles {
+      opacity: 1;
+    }
+
+    .sparkles span {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: sparkle 1.2s ease-out forwards;
+    }
+
+    @keyframes sparkle {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) translate(var(--tx), var(--ty));
+        opacity: 0;
+      }
+    }
+
+    .open-hint {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    .open-hint kbd {
+      font-family: inherit;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .reveal {
+      opacity: 0;
+      pointer-events: none;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+      transition: opacity 1s ease 0.35s;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reveal-inner {
+      background: var(--paper);
+      border-radius: 22px;
+      box-shadow:
+        0 0 0 4px #f472b6,
+        0 0 0 8px #fbbf24,
+        0 0 0 12px #34d399,
+        0 28px 90px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    .letterhead {
+      padding: 2rem 1.75rem 1.35rem;
+      text-align: center;
+      background: linear-gradient(125deg, #fef3c7 0%, #fce7f3 40%, #e0f2fe 75%, #d1fae5 100%);
+      border-bottom: 3px dashed rgba(124, 58, 237, 0.25);
+    }
+
+    .letterhead h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.65rem, 4vw, 2.2rem);
+      font-weight: 700;
+      margin: 0 0 0.35rem;
+      color: #5b21b6;
+      text-shadow: 2px 2px 0 #fde68a;
+    }
+
+    .letterhead p {
+      margin: 0;
+      color: #6b21a8;
+      font-weight: 500;
+      font-size: 1.02rem;
+    }
+
+    .route-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 1.1rem;
+      padding: 0.55rem 1.15rem;
+      background: linear-gradient(90deg, #ff6b9d, #ffc857, #5eead4);
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #1e1b4b;
+      border: 3px solid #fff;
+      box-shadow: 0 6px 0 #c026d3, 0 10px 24px rgba(192, 38, 211, 0.35);
+      transform: rotate(-1deg);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    @media (min-width: 880px) {
+      .layout {
+        grid-template-columns: 1fr 340px;
+        min-height: 520px;
+      }
+    }
+
+    .map-area {
+      position: relative;
+      height: min(52vh, 420px);
+      width: 100%;
+      background: linear-gradient(180deg, #38bdf8 0%, #22d3ee 25%, #fde68a 55%, #fcd34d 100%);
+    }
+
+    @media (min-width: 880px) {
+      .map-area {
+        height: auto;
+        min-height: 520px;
+      }
+    }
+
+    .map-area .map-caption {
+      position: absolute;
+      left: 0.75rem;
+      bottom: 0.5rem;
+      right: 0.75rem;
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(30, 27, 75, 0.85);
+      line-height: 1.35;
+      pointer-events: none;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .route-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .route-svg .route-line {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      filter: drop-shadow(0 2px 0 #fff) drop-shadow(0 4px 8px rgba(236, 72, 153, 0.5));
+    }
+
+    .route-svg.map-ready .route-line {
+      transition: stroke-dashoffset 2.2s cubic-bezier(0.33, 1, 0.68, 1);
+      stroke-dashoffset: 0;
+    }
+
+    .route-svg .marker-ring {
+      fill: #fff;
+      stroke-width: 2.5;
+      opacity: 0;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+
+    .route-svg.map-ready .marker-ring {
+      animation: pop 0.45s ease forwards;
+    }
+
+    .route-svg.map-ready .m-lisbon .marker-ring {
+      animation-delay: 1.6s;
+    }
+
+    .route-svg.map-ready .m-sintra .marker-ring {
+      animation-delay: 1.85s;
+    }
+
+    .route-svg.map-ready .m-porto .marker-ring {
+      animation-delay: 2.05s;
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .route-svg .marker-dot {
+      stroke: #fff;
+      stroke-width: 1.5;
+    }
+
+    .route-svg .marker-label {
+      font-family: system-ui, Segoe UI, Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      fill: #312e81;
+    }
+
+    .route-svg .marker-sub {
+      font-family: system-ui, Segoe UI, Arial, sans-serif;
+      font-size: 8.5px;
+      font-weight: 600;
+      fill: #5b21b6;
+    }
+
+    .itinerary {
+      padding: 1rem 0.85rem 1.5rem;
+      max-height: min(52vh, 420px);
+      overflow-y: auto;
+      border-top: 3px dashed rgba(124, 58, 237, 0.2);
+      background: linear-gradient(180deg, #fdf4ff 0%, #ecfeff 40%, #fff7ed 100%);
+    }
+
+    @media (min-width: 880px) {
+      .itinerary {
+        border-top: none;
+        border-left: 3px dashed rgba(124, 58, 237, 0.2);
+        max-height: 520px;
+      }
+    }
+
+    .day {
+      --day-accent: #ec4899;
+      margin-bottom: 0.85rem;
+      padding: 0.85rem 0.95rem 0.95rem;
+      border-radius: 16px;
+      background: #fff;
+      border-left: 6px solid var(--day-accent);
+      box-shadow: 0 4px 14px rgba(91, 33, 182, 0.08);
+    }
+
+    .day:nth-child(8n + 1) {
+      --day-accent: #ec4899;
+    }
+
+    .day:nth-child(8n + 2) {
+      --day-accent: #f472b6;
+    }
+
+    .day:nth-child(8n + 3) {
+      --day-accent: #a855f7;
+    }
+
+    .day:nth-child(8n + 4) {
+      --day-accent: #6366f1;
+    }
+
+    .day:nth-child(8n + 5) {
+      --day-accent: #0ea5e9;
+    }
+
+    .day:nth-child(8n + 6) {
+      --day-accent: #14b8a6;
+    }
+
+    .day:nth-child(8n + 7) {
+      --day-accent: #22c55e;
+    }
+
+    .day:nth-child(8n + 8) {
+      --day-accent: #eab308;
+    }
+
+    .day:last-child {
+      margin-bottom: 0;
+    }
+
+    .day-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+
+    .day-title .date {
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: #7c3aed;
+      background: rgba(233, 213, 255, 0.7);
+      padding: 0.12rem 0.45rem;
+      border-radius: 999px;
+    }
+
+    .day ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: #4338ca;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .day li {
+      margin-bottom: 0.28rem;
+    }
+
+    .day li::marker {
+      color: var(--day-accent);
+    }
+
+    .itinerary a.maps-link {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: underline;
+      text-decoration-color: rgba(37, 99, 235, 0.45);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+    }
+
+    .itinerary a.maps-link:hover {
+      color: #1d4ed8;
+      text-decoration-color: #1d4ed8;
+    }
+
+    .itinerary a.maps-link:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .route-svg a.map-marker-link {
+      cursor: pointer;
+    }
+
+    .route-svg a.map-marker-link .marker-label,
+    .route-svg a.map-marker-link .marker-sub {
+      text-decoration: underline;
+      text-decoration-color: rgba(49, 46, 129, 0.35);
+    }
+
+    .route-svg a.map-marker-link:hover .marker-label,
+    .route-svg a.map-marker-link:hover .marker-sub {
+      fill: #1d4ed8;
+      text-decoration-color: #2563eb;
+    }
+
+    .route-svg a.map-marker-link:focus {
+      outline: none;
+    }
+
+    .route-svg a.map-marker-link:focus-visible .marker-ring {
+      stroke: #2563eb;
+      stroke-width: 4;
+    }
+
+    .day .block {
+      margin-top: 0.55rem;
+      font-size: 0.78rem;
+      color: #0f766e;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #ccfbf1, #cffafe);
+    }
+
+    .footer-note {
+      padding: 1.1rem 1.5rem 1.6rem;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #6d28d9;
+      font-family: var(--font-display);
+      background: linear-gradient(90deg, #fef9c3, #fce7f3, #dbeafe);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .gift-wrap h1 {
+        animation: none;
+        background-position: 0 center;
+      }
+
+      .gift-box:not(.opening) {
+        animation: none;
+      }
+
+      .route-svg.map-ready .route-line {
+        transition: none;
+        stroke-dashoffset: 0;
+      }
+
+      .route-svg.map-ready .marker-ring {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="scene" aria-live="polite">
+    <div class="gift-wrap">
+      <h1>Un voyage pour toi</h1>
+      <p class="subtitle">🇵🇹 Février 2027 — c’est parti ! ✈️</p>
+      <div
+        class="gift-box"
+        id="giftBox"
+        role="button"
+        tabindex="0"
+        aria-label="Ouvrir le cadeau"
+      >
+        <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+        <div class="bow"></div>
+        <div class="box-lid"></div>
+        <div class="ribbon-v"></div>
+        <div class="ribbon-h"></div>
+        <div class="box-base"></div>
+      </div>
+      <p class="open-hint">Clique sur le cadeau ou appuie sur <kbd>Entrée</kbd></p>
+    </div>
+  </div>
+
+  <main class="reveal" id="reveal">
+    <div class="reveal-inner">
+      <header class="letterhead">
+        <h2>Ton itinéraire</h2>
+        <p>Du samedi 13 au samedi 20 février — avec amour</p>
+        <div class="route-chip" role="text">
+          Lisbonne → Sintra → Porto → Lisbonne
+          <span aria-hidden="true">🎉</span>
+        </div>
+      </header>
+      <div class="layout">
+        <div class="map-area" role="group" aria-labelledby="mapHeading">
+          <span id="mapHeading" class="sr-only">Carte schématique du trajet au Portugal</span>
+          <svg
+            class="route-svg"
+            id="routeSvg"
+            viewBox="0 0 400 420"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="landGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fef9c3" />
+                <stop offset="45%" stop-color="#fde68a" />
+                <stop offset="100%" stop-color="#fcd34d" />
+              </linearGradient>
+              <linearGradient id="seaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0369a1" />
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.85" />
+              </linearGradient>
+              <linearGradient id="routeRainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ec4899" />
+                <stop offset="33%" stop-color="#fbbf24" />
+                <stop offset="66%" stop-color="#22d3ee" />
+                <stop offset="100%" stop-color="#a855f7" />
+              </linearGradient>
+              <radialGradient id="sunGlow" cx="88%" cy="12%" r="18%">
+                <stop offset="0%" stop-color="#fff" />
+                <stop offset="40%" stop-color="#fef08a" />
+                <stop offset="100%" stop-color="#fef08a" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <rect width="400" height="420" fill="url(#landGrad)" />
+            <circle cx="352" cy="48" r="36" fill="url(#sunGlow)" />
+            <circle cx="358" cy="42" r="14" fill="#fde047" stroke="#fff" stroke-width="2" />
+            <path
+              d="M0,0 L118,0 Q88,120 108,220 Q98,300 112,420 L0,420 Z"
+              fill="url(#seaGrad)"
+              opacity="0.95"
+            />
+            <path
+              d="M118,8 Q105,80 125,160 Q108,240 118,320 Q112,380 125,412 L400,412 L400,8 Z"
+              fill="#fef08a"
+              stroke="#f59e0b"
+              stroke-width="2"
+              opacity="0.92"
+            />
+            <text x="28" y="36" fill="#0c4a6e" font-family="Georgia, Times New Roman, serif" font-size="14" font-weight="700">Océan</text>
+            <text x="28" y="52" fill="#0369a1" font-family="system-ui, Arial, sans-serif" font-size="9" font-weight="600">splash !</text>
+
+            <!-- Tracé : Lisbonne → Sintra → Lisbonne → Porto → Lisbonne -->
+            <polyline
+              class="route-line"
+              pathLength="100"
+              stroke="url(#routeRainbow)"
+              points="268,318 172,246 268,318 218,98 268,318"
+            />
+
+            <a
+              class="map-marker-link"
+              href="https://www.google.com/maps/search/?api=1&amp;query=Porto%2C%20Portugal"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Porto — ouvrir dans Google Maps"
+            >
+              <g class="m-porto" transform="translate(218, 98)">
+                <title>Porto — cliquer pour ouvrir dans Google Maps</title>
+                <circle class="marker-ring" r="18" cx="0" cy="0" stroke="#d97706" />
+                <circle class="marker-dot" r="7" cx="0" cy="0" fill="#fde047" />
+                <text class="marker-label" x="14" y="-8">Porto</text>
+                <text class="marker-sub" x="14" y="4">~3 h en train</text>
+              </g>
+            </a>
+
+            <a
+              class="map-marker-link"
+              href="https://www.google.com/maps/search/?api=1&amp;query=Sintra%2C%20Portugal"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Sintra — ouvrir dans Google Maps"
+            >
+              <g class="m-sintra" transform="translate(172, 246)">
+                <title>Sintra — cliquer pour ouvrir dans Google Maps</title>
+                <circle class="marker-ring" r="16" cx="0" cy="0" stroke="#059669" />
+                <circle class="marker-dot" r="6" cx="0" cy="0" fill="#4ade80" />
+                <text class="marker-label" x="-42" y="-10">Sintra</text>
+                <text class="marker-sub" x="-42" y="3">depuis Lisbonne</text>
+              </g>
+            </a>
+
+            <a
+              class="map-marker-link"
+              href="https://www.google.com/maps/search/?api=1&amp;query=Lisbonne%20Portugal"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Lisbonne — ouvrir dans Google Maps"
+            >
+              <g class="m-lisbon" transform="translate(268, 318)">
+                <title>Lisbonne — cliquer pour ouvrir dans Google Maps</title>
+                <circle class="marker-ring" r="20" cx="0" cy="0" stroke="#db2777" />
+                <circle class="marker-dot" r="8" cx="0" cy="0" fill="#fb7185" />
+                <text class="marker-label" x="-8" y="34">Lisbonne</text>
+                <text class="marker-sub" x="-36" y="46">départ & retour ✈</text>
+              </g>
+            </a>
+          </svg>
+          <p class="map-caption">
+            Schéma du parcours
+          </p>
+        </div>
+        <aside class="itinerary" id="itinerary" aria-label="Détail des journées"></aside>
+      </div>
+      <p class="footer-note">Bonne découverte — et bon voyage ! 🧳💛</p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      function googleMapsSearchUrl(query) {
+        return (
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(query)
+        );
+      }
+
+      function appendListItem(ul, entry) {
+        var li = document.createElement("li");
+        var isString = typeof entry === "string";
+        var text = isString ? entry : entry.text;
+        var mapsQuery = isString ? null : entry.mapsQuery || null;
+
+        if (mapsQuery) {
+          var a = document.createElement("a");
+          a.href = googleMapsSearchUrl(mapsQuery);
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.className = "maps-link";
+          a.textContent = text;
+          a.title = "Ouvrir dans Google Maps (nouvel onglet)";
+          a.setAttribute("aria-label", text + " — Google Maps, nouvel onglet");
+          li.appendChild(a);
+        } else {
+          li.textContent = text;
+        }
+        ul.appendChild(li);
+      }
+
+      const itineraryData = [
+        {
+          title: "Jour 1 — Samedi 13 février",
+          items: [
+            {
+              text: "Départ 11h35 de Paris → arrivée à Lisbonne 13h15",
+              mapsQuery: "Aeroporto Humberto Delgado Lisboa",
+            },
+            "Installation tranquille",
+            {
+              text: "Balade dans l’Alfama",
+              mapsQuery: "Alfama Lisboa Portugal",
+            },
+            {
+              text: "Coucher de soleil au Miradouro de Santa Luzia",
+              mapsQuery: "Miradouro de Santa Luzia Lisboa",
+            },
+            "Dîner romantique cool",
+          ],
+        },
+        {
+          title: "Jour 2 — Dimanche 14 février (Saint-Valentin)",
+          blocks: [
+            {
+              label: "Matin",
+              lines: [
+                "Brunch + balade",
+                { text: "Tram 28", mapsQuery: "Linha 28E elétrico Lisboa" },
+              ],
+            },
+            { label: "Après-midi", lines: ["Spa + massage duo (à réserver)"] },
+            { label: "Soir", lines: ["Dîner gastronomique"] },
+          ],
+        },
+        {
+          title: "Jour 3 — Lundi 15 février",
+          items: [
+            "Marchés + artisanat",
+            {
+              text: "Mercado de Campo de Ourique",
+              mapsQuery: "Mercado de Campo de Ourique Lisboa",
+            },
+            {
+              text: "Time Out Market",
+              mapsQuery: "Time Out Market Lisboa Mercado da Ribeira",
+            },
+            { text: "LX Factory", mapsQuery: "LX Factory Lisboa" },
+          ],
+        },
+        {
+          title: "Jour 4 — Mardi 16 février",
+          items: [
+            { text: "Excursion nature à Sintra", mapsQuery: "Sintra Portugal" },
+            {
+              text: "Parc de Monserrate",
+              mapsQuery: "Parque de Monserrate Sintra",
+            },
+            {
+              text: "Palais de Pena",
+              mapsQuery: "Palácio Nacional da Pena Sintra",
+            },
+            "Retour Lisbonne + dîner",
+          ],
+        },
+        {
+          title: "Jour 5 — Mercredi 17 février",
+          items: [
+            {
+              text: "Train vers Porto (~3 h)",
+              mapsQuery: "Estação Ferroviária de Lisboa-Oriente",
+            },
+            "Installation",
+            {
+              text: "Balade à Ribeira",
+              mapsQuery: "Cais da Ribeira Porto",
+            },
+            {
+              text: "Coucher de soleil au pont Dom Luís I",
+              mapsQuery: "Ponte Dom Luís I Porto",
+            },
+          ],
+        },
+        {
+          title: "Jour 6 — Jeudi 18 février",
+          blocks: [
+            {
+              label: "Gastronomie + vin + détente",
+              lines: [
+                { text: "Mercado do Bolhão", mapsQuery: "Mercado do Bolhão Porto" },
+                {
+                  text: "Dégustation à Vila Nova de Gaia",
+                  mapsQuery: "Caves Vinho do Porto Vila Nova de Gaia",
+                },
+                "Spa / massage duo",
+              ],
+            },
+          ],
+        },
+        {
+          title: "Jour 7 — Vendredi 19 février",
+          blocks: [
+            {
+              label: "Retour vers Lisbonne (clé du voyage)",
+              lines: [
+                {
+                  text: "Train matin ou début d’après-midi — Porto → Lisbonne (~3 h)",
+                  mapsQuery: "Estação Ferroviária de Porto-Campanhã",
+                },
+              ],
+            },
+            {
+              label: "Après-midi",
+              lines: [
+                "Check-in hôtel Lisbonne",
+                "Balade libre (shopping, café, souvenirs)",
+              ],
+            },
+            { label: "Soir", lines: ["Dernière soirée romantique (très important)"] },
+          ],
+        },
+        {
+          title: "Jour 8 — Samedi 20 février",
+          items: [
+            "Petit-déjeuner tranquille",
+            {
+              text: "Retour 13h55 — arrivée 17h30",
+              mapsQuery: "Aeroporto Humberto Delgado Lisboa",
+            },
+            "Départ sans stress",
+          ],
+        },
+      ];
+
+      const itineraryEl = document.getElementById("itinerary");
+      itineraryData.forEach(function (day) {
+        const article = document.createElement("article");
+        article.className = "day";
+        const titleParts = day.title.split(" — ");
+        const h3 = document.createElement("h3");
+        h3.className = "day-title";
+        const strong = document.createElement("span");
+        strong.textContent = titleParts[0] || day.title;
+        h3.appendChild(strong);
+        if (titleParts[1]) {
+          const span = document.createElement("span");
+          span.className = "date";
+          span.textContent = "— " + titleParts[1];
+          h3.appendChild(span);
+        }
+        article.appendChild(h3);
+
+        if (day.items) {
+          const ul = document.createElement("ul");
+          day.items.forEach(function (entry) {
+            appendListItem(ul, entry);
+          });
+          article.appendChild(ul);
+        }
+        if (day.blocks) {
+          day.blocks.forEach(function (b) {
+            const div = document.createElement("div");
+            div.className = "block";
+            div.textContent = b.label;
+            article.appendChild(div);
+            const ul = document.createElement("ul");
+            b.lines.forEach(function (entry) {
+              appendListItem(ul, entry);
+            });
+            article.appendChild(ul);
+          });
+        }
+        itineraryEl.appendChild(article);
+      });
+
+      const giftBox = document.getElementById("giftBox");
+      const scene = document.getElementById("scene");
+      const reveal = document.getElementById("reveal");
+      const sparkles = document.getElementById("sparkles");
+      const routeSvg = document.getElementById("routeSvg");
+      let opened = false;
+
+      const sparkleColors = [
+        "#f472b6",
+        "#fbbf24",
+        "#4ade80",
+        "#38bdf8",
+        "#a78bfa",
+        "#fb7185",
+        "#facc15",
+        "#2dd4bf",
+      ];
+
+      function burstSparkles() {
+        sparkles.innerHTML = "";
+        for (let i = 0; i < 22; i++) {
+          const s = document.createElement("span");
+          const angle = (Math.PI * 2 * i) / 22 + Math.random() * 0.4;
+          const dist = 55 + Math.random() * 95;
+          s.style.left = "50%";
+          s.style.top = "50%";
+          s.style.background = sparkleColors[i % sparkleColors.length];
+          s.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+          s.style.setProperty("--ty", Math.sin(angle) * dist + "px");
+          s.style.animationDelay = Math.random() * 0.15 + "s";
+          var sizePx = 6 + (i % 3) * 3;
+          s.style.width = sizePx + "px";
+          s.style.height = sizePx + "px";
+          sparkles.appendChild(s);
+        }
+      }
+
+      function openGift() {
+        if (opened) return;
+        opened = true;
+        burstSparkles();
+        giftBox.classList.add("opening");
+        setTimeout(function () {
+          scene.classList.add("hidden");
+          reveal.classList.add("visible");
+          requestAnimationFrame(function () {
+            if (routeSvg) routeSvg.classList.add("map-ready");
+          });
+        }, 1100);
+      }
+
+      giftBox.addEventListener("click", openGift);
+      giftBox.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openGift();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
